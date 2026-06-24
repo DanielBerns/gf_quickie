@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "grupos": [
+    {
+      "id": "personal",
+      "nombre": "Necesidades Personales",
+      "icono": "👤",
+      "color": "#38BDF8",
+      "eventos": [
+        { "id": "per.1",  "nombre": "Atención médica en guardia / hospital" },
+        { "id": "per.2",  "nombre": "Turnos para especialistas y estudios" },
+        { "id": "per.3",  "nombre": "Acceso a medicamentos" },
+        { "id": "per.4",  "nombre": "Salud mental: ansiedad, depresión, estrés" },
+        { "id": "per.5",  "nombre": "Empleo estable y bien pago" },
+        { "id": "per.6",  "nombre": "Capacitación laboral / oficios" },
+        { "id": "per.7",  "nombre": "Costo de vida y tarifas de servicios" },
+        { "id": "per.8",  "nombre": "Acceso a internet y telefonía móvil" },
+        { "id": "per.9",  "nombre": "Vivienda propia vs alquiler caro" },
+        { "id": "per.10", "nombre": "Servicios básicos: agua, luz, gas, cloacas" },
+        { "id": "per.11", "nombre": "Calefacción en invierno y cortes de gas" },
+        { "id": "per.12", "nombre": "Transporte público: frecuencia y estado" },
+        { "id": "per.13", "nombre": "Seguridad personal al caminar de noche" },
+        { "id": "per.14", "nombre": "Adicciones: alcohol, drogas" },
+        { "id": "per.15", "nombre": "Actividad física y espacios deportivos" },
+        { "id": "per.16", "nombre": "Tiempo libre y recreación" },
+        { "id": "per.17", "nombre": "Acceso a educación terciaria / universitaria" }
+      ]
+    },
+    {
+      "id": "familiar",
+      "nombre": "Necesidades Familiares",
+      "icono": "👨‍👩‍👧",
+      "color": "#34D399",
+      "eventos": [
+        { "id": "fam.18", "nombre": "Cuidado de niños pequeños / guarderías" },
+        { "id": "fam.19", "nombre": "Bullying y convivencia escolar" },
+        { "id": "fam.20", "nombre": "Apoyo escolar para hijos" },
+        { "id": "fam.21", "nombre": "Relación padres-hijos / comunicación" },
+        { "id": "fam.22", "nombre": "Cuidado de adultos mayores" },
+        { "id": "fam.23", "nombre": "Violencia familiar / de género" },
+        { "id": "fam.24", "nombre": "Gastos de educación: útiles, uniformes, cuotas" },
+        { "id": "fam.25", "nombre": "Alimentación familiar y precios de alimentos" },
+        { "id": "fam.26", "nombre": "Espacios para que jueguen los chicos" },
+        { "id": "fam.27", "nombre": "Tiempo en familia vs trabajo" },
+        { "id": "fam.28", "nombre": "Conciliación trabajo-familia" },
+        { "id": "fam.29", "nombre": "Acceso a programas sociales / ANSES" },
+        { "id": "fam.30", "nombre": "Vivienda familiar: hacinamiento" },
+        { "id": "fam.31", "nombre": "Problemas de convivencia entre vecinos" },
+        { "id": "fam.32", "nombre": "Mascotas: tenencia responsable" },
+        { "id": "fam.33", "nombre": "Acceso a cultura: cine, teatro, biblioteca" }
+      ]
+    },
+    {
+      "id": "barrial",
+      "nombre": "Necesidades Barriales",
+      "icono": "🏘️",
+      "color": "#FBBF24",
+      "eventos": [
+        { "id": "bar.34", "nombre": "Calles rotas, baches y mantenimiento" },
+        { "id": "bar.35", "nombre": "Iluminación de calles y plazas" },
+        { "id": "bar.36", "nombre": "Recolección de basura y basurales" },
+        { "id": "bar.37", "nombre": "Limpieza de terrenos baldíos" },
+        { "id": "bar.38", "nombre": "Inundaciones y desagües pluviales" },
+        { "id": "bar.39", "nombre": "Viento y voladura de basura" },
+        { "id": "bar.40", "nombre": "Delitos: robos, vandalismo" },
+        { "id": "bar.41", "nombre": "Tránsito: velocidad, estacionamiento, semáforos" },
+        { "id": "bar.42", "nombre": "Espacios verdes y plazas en condiciones" },
+        { "id": "bar.43", "nombre": "Centro de salud / sala barrial" },
+        { "id": "bar.44", "nombre": "Comedores y merenderos comunitarios" },
+        { "id": "bar.45", "nombre": "Participación vecinal y comisión barrial" },
+        { "id": "bar.46", "nombre": "Acceso a conectividad en el barrio" },
+        { "id": "bar.47", "nombre": "Perros sueltos y control de fauna urbana" },
+        { "id": "bar.48", "nombre": "Contaminación ambiental: aire, suelo" },
+        { "id": "bar.49", "nombre": "Falta de comercios / precios en el barrio" },
+        { "id": "bar.50", "nombre": "Actividades culturales / deportivas barriales" }
+      ]
+    }
+  ]
+}

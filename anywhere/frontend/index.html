@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Campo Ciudadano — Registro de entrevistas ciudadanas en Comodoro Rivadavia.">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Campo">
+
+  <title>Campo Ciudadano</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="images/logo_120sq.png">
+  <link rel="apple-touch-icon" href="images/logo_120sq.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PIN GATE — shown until a valid PIN session is active
+  ════════════════════════════════════════════════════════════ -->
+  <div id="pin-gate" role="dialog" aria-modal="true" aria-label="Inicio de sesión">
+    <div class="pin-logo" aria-hidden="true">🗺️</div>
+    <div class="pin-app-name">Campo Ciudadano</div>
+    <p class="pin-subtitle">Ingrese su PIN para comenzar</p>
+
+    <div class="pin-dots" id="pin-dots" aria-label="Dígitos ingresados" role="status">
+      <div class="pin-dot" id="dot-0"></div>
+      <div class="pin-dot" id="dot-1"></div>
+      <div class="pin-dot" id="dot-2"></div>
+      <div class="pin-dot" id="dot-3"></div>
+      <div class="pin-dot" id="dot-4"></div>
+      <div class="pin-dot" id="dot-5"></div>
+    </div>
+
+    <div class="pin-error-msg" id="pin-error" role="alert"></div>
+
+    <div class="pin-keypad" role="group" aria-label="Teclado numérico">
+      <button class="pin-key" data-digit="1" aria-label="1">1</button>
+      <button class="pin-key" data-digit="2" aria-label="2">2</button>
+      <button class="pin-key" data-digit="3" aria-label="3">3</button>
+      <button class="pin-key" data-digit="4" aria-label="4">4</button>
+      <button class="pin-key" data-digit="5" aria-label="5">5</button>
+      <button class="pin-key" data-digit="6" aria-label="6">6</button>
+      <button class="pin-key" data-digit="7" aria-label="7">7</button>
+      <button class="pin-key" data-digit="8" aria-label="8">8</button>
+      <button class="pin-key" data-digit="9" aria-label="9">9</button>
+      <button class="pin-key pin-empty" aria-hidden="true"></button>
+      <button class="pin-key" data-digit="0" aria-label="0">0</button>
+      <button class="pin-key pin-delete" id="pin-delete-btn" aria-label="Borrar">⌫</button>
+    </div>
+
+    <button class="pin-qr-btn" id="pin-qr-btn" aria-label="Escanear código QR">
+      📷 Escanear código QR
+    </button>
+  </div>
+
+  <!-- QR Scanner Overlay -->
+  <div id="qr-scanner-overlay" role="dialog" aria-modal="true" aria-label="Escáner QR">
+    <video id="qr-video" autoplay playsinline muted aria-label="Cámara para escanear QR"></video>
+    <p class="qr-hint">Apunte la cámara al código QR</p>
+    <button class="btn btn-secondary" id="qr-cancel-btn" aria-label="Cancelar escáner">Cancelar</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN APP — shown after PIN is validated
+  ════════════════════════════════════════════════════════════ -->
+  <div id="app" class="hidden">
+
+    <!-- Header -->
+    <header class="app-header">
+      <strong class="app-title">Campo Ciudadano</strong>
+      <div id="pending-badge" class="pending-badge" aria-live="polite" aria-label="Reportes pendientes">
+        <span id="pending-count">0</span> pendiente<span id="pending-plural">s</span>
+      </div>
+    </header>
+
+    <main class="main-scroll">
+
+      <!-- Sync bar -->
+      <div class="sync-bar" id="sync-bar" role="status">
+        <span class="sync-text">📡 <span id="sync-count">0</span> reporte(s) pendiente(s) de sincronización</span>
+        <button class="btn btn-secondary btn-sm sync-btn" id="force-sync-btn" aria-label="Sincronizar ahora">Sincronizar</button>
+      </div>
+
+      <h1 class="sr-only">Nuevo reporte ciudadano</h1>
+
+      <!-- ── SECTION 1: Ubicación ──────────────────────────── -->
+      <section class="report-section" id="section-location" aria-label="Ubicación">
+        <div class="section-header">
+          <span class="section-icon" aria-hidden="true">📍</span>
+          <span class="section-title">Ubicación</span>
+          <span class="section-status" id="location-status">Buscando…</span>
+        </div>
+        <div class="section-body">
+          <div class="location-row">
+            <div class="location-display gps-loading" id="location-display" aria-live="polite">
+              <span class="location-icon" aria-hidden="true">📡</span>
+              Obteniendo GPS…
+            </div>
+            <button class="btn btn-secondary btn-icon" id="refresh-location-btn"
+                    aria-label="Actualizar ubicación GPS" title="Actualizar GPS">↺</button>
+          </div>
+
+          <label for="barrio-select" class="sr-only">Seleccione el barrio</label>
+          <select id="barrio-select" class="barrio-select" aria-label="Barrio o sector">
+            <option value="">— Seleccionar barrio —</option>
+            <optgroup label="Zona Norte">
+              <option value="General Mosconi (Km 3)">General Mosconi (Km 3)</option>
+              <option value="Don Bosco (Km 8)">Don Bosco (Km 8)</option>
+              <option value="Presidente Ortiz (Km 5)">Presidente Ortiz (Km 5)</option>
+              <option value="Ciudadela">Ciudadela</option>
+              <option value="Astra">Astra</option>
+              <option value="Diadema Argentina">Diadema Argentina</option>
+              <option value="Caleta Córdova">Caleta Córdova</option>
+              <option value="Palazzo">Palazzo</option>
+              <option value="Standard Norte">Standard Norte</option>
+              <option value="Standard Sur">Standard Sur</option>
+              <option value="Standard Este">Standard Este</option>
+              <option value="Castelli">Castelli</option>
+              <option value="Próspero Palazzo">Próspero Palazzo</option>
+              <option value="Laprida">Laprida</option>
+              <option value="Las Américas">Las Américas</option>
+            </optgroup>
+            <optgroup label="Zona Sur">
+              <option value="Centro">Centro</option>
+              <option value="Jorge Newbery">Jorge Newbery</option>
+              <option value="Pietrobelli">Pietrobelli</option>
+              <option value="Ceferino Namuncurá">Ceferino Namuncurá</option>
+              <option value="San Martín">San Martín</option>
+              <option value="Isidro Quiroga">Isidro Quiroga</option>
+              <option value="San Cayetano">San Cayetano</option>
+              <option value="Máximo Abásolo">Máximo Abásolo</option>
+              <option value="Juan XXIII">Juan XXIII</option>
+              <option value="Stella Maris">Stella Maris</option>
+              <option value="Las Flores">Las Flores</option>
+              <option value="13 de Diciembre">13 de Diciembre</option>
+              <option value="Pueyrredón">Pueyrredón</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Loteo Los Fresnos">Loteo Los Fresnos</option>
+              <option value="Quirno Costa">Quirno Costa</option>
+              <option value="Restinga Alí">Restinga Alí</option>
+              <option value="René Favaloro">René Favaloro</option>
+            </optgroup>
+            <optgroup label="Zona Oeste">
+              <option value="30 de Octubre">30 de Octubre</option>
+              <option value="25 de Mayo">25 de Mayo</option>
+              <option value="San Jorge">San Jorge</option>
+              <option value="Moure">Moure</option>
+              <option value="Fracción 14">Fracción 14</option>
+              <option value="Fracción 15">Fracción 15</option>
+              <option value="Fracción 16">Fracción 16</option>
+            </optgroup>
+          </select>
+
+          <input type="hidden" id="latitude" name="latitude">
+          <input type="hidden" id="longitude" name="longitude">
+          <input type="hidden" id="gps-accuracy" name="gps_accuracy">
+        </div>
+      </section>
+
+      <!-- ── SECTION 2: Eventos / Tags ────────────────────── -->
+      <section class="report-section" id="section-tags" aria-label="Temas del reporte">
+        <div class="section-header">
+          <span class="section-icon" aria-hidden="true">🏷️</span>
+          <span class="section-title">Temas</span>
+          <span class="section-status" id="tags-status">Ninguno</span>
+        </div>
+        <div class="section-body">
+          <div class="tag-selected-row" id="selected-tags-row" aria-label="Temas seleccionados" aria-live="polite"></div>
+          <div id="event-groups-container" aria-label="Grupos de temas">
+            <!-- Rendered by categories.js -->
+            <p style="color:var(--text-dim);font-size:0.9rem;">Cargando temas…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 3: Fotos ─────────────────────────────── -->
+      <section class="report-section" id="section-photos" aria-label="Fotos opcionales">
+        <div class="section-header">
+          <span class="section-icon" aria-hidden="true">📷</span>
+          <span class="section-title">Fotos <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(opcional)</span></span>
+          <span class="section-status" id="photos-status">Sin fotos</span>
+        </div>
+        <div class="section-body">
+          <div class="photo-row" id="photo-row" aria-label="Fotos capturadas"></div>
+
+          <!-- Live camera feed and canvas -->
+          <video id="camera-feed" class="camera-feed hidden" autoplay playsinline aria-label="Cámara en vivo"></video>
+          <canvas id="photo-canvas" class="photo-canvas hidden" aria-hidden="true"></canvas>
+
+          <!-- Native file picker fallback -->
+          <input type="file" id="photo-input" class="hidden-file-input"
+                 accept="image/*" capture="environment"
+                 aria-label="Seleccionar foto de galería">
+
+          <div style="display: flex; gap: 8px; flex-direction: column;">
+            <button class="btn btn-secondary btn-full" id="start-camera-btn"
+                    aria-label="Iniciar cámara en la aplicación">
+              📷 Iniciar cámara
+            </button>
+            <button class="btn btn-success btn-full hidden" id="capture-photo-btn"
+                    aria-label="Capturar foto ahora">
+              📸 Capturar
+            </button>
+            <button class="btn btn-secondary btn-full hidden" id="cancel-camera-btn"
+                    aria-label="Cancelar cámara" style="background: transparent; color: var(--danger); border-color: var(--danger);">
+              Cancelar
+            </button>
+            <button class="btn btn-secondary btn-full" id="fallback-photo-btn"
+                    aria-label="Adjuntar desde galería" style="background: transparent; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 8px;">
+              📁 Adjuntar desde galería
+            </button>
+          </div>
+          <p class="photo-limit-note" id="photo-limit-note">Máximo 5 fotos</p>
+        </div>
+      </section>
+
+      <!-- ── SECTION 4: Notas ─────────────────────────────── -->
+      <section class="report-section" id="section-notes" aria-label="Notas adicionales opcionales">
+        <div class="section-header">
+          <span class="section-icon" aria-hidden="true">📝</span>
+          <span class="section-title">Notas <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(opcional)</span></span>
+          <span class="section-status" id="notes-status"></span>
+        </div>
+        <div class="section-body">
+          <label for="notes-input" class="sr-only">Notas adicionales</label>
+          <textarea id="notes-input" class="notes-input"
+                    placeholder="Agrega un comentario o detalle adicional…"
+                    rows="3" aria-label="Notas adicionales"></textarea>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Sticky Submit -->
+    <div class="submit-bar">
+      <div class="submit-bar-inner">
+        <button id="submit-btn" class="btn btn-success btn-full"
+                aria-label="Enviar reporte">
+          ✅ Enviar reporte
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /#app -->
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- Scripts -->
+  <script src="js/pin-ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/geolocation.js"></script>
+  <script src="js/categories.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
