@@ -1,6 +1,6 @@
 {
-  "name": "Campo Ciudadano",
-  "short_name": "Campo",
+  "name": "Horizonte Patagonia",
+  "short_name": "Horizonte",
   "description": "Registro de entrevistas ciudadanas en Comodoro Rivadavia.",
   "start_url": "/",
   "display": "standalone",
@@ -10,20 +10,41 @@
   "lang": "es",
   "icons": [
     {
-      "src": "images/logo_120sq.png",
-      "sizes": "120x120",
-      "type": "image/png"
-    },
-    {
-      "src": "images/logo_120sq.png",
+      "src": "images/logo_192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "images/logo_120sq.png",
+      "src": "images/logo_512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "images/logo_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "images/screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png"
     }
   ]
 }
