@@ -6,7 +6,7 @@
  */
 
 const PinUI = (() => {
-  const MAX_DIGITS = 6;
+  const MAX_DIGITS = 8;
   let digits = [];
   let qrStream = null;
   let qrScanning = false;
