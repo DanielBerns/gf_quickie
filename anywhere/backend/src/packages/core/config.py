@@ -17,7 +17,7 @@ def load_configuration(config_path: Path) -> dict:
 # Set QUICKIE_INSTANCE to the directory that contains server.yaml.
 # Example:  export QUICKIE_INSTANCE=~/Info/quickie/devel
 # ---------------------------------------------------------------------------
-_instance_env = os.environ.get("QUICKIE_INSTANCE")
+_instance_env = os.environ.get("QUICKIE_INSTANCE", "~/Info")
 if not _instance_env:
     raise EnvironmentError(
         "QUICKIE_INSTANCE environment variable is not set. "
